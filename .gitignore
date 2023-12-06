@@ -2,9 +2,10 @@
 # vs code
 .vscode/
 # simulink generated files
-./slprj/
-./PIL_ert_rtw/
-./resources/
-./Batmobile.prj
-./Simulation/PIL_ert_rtw/
-./Simulation/slprj/
+slprj/
+PIL_ert_rtw/
+resources/
+Batmobile.prj
+Simulation/PIL_ert_rtw/
+Simulation/slprj/
+Simulation/slprj/_jitprj/jitEngineAccessInfo.mat
