@@ -9,3 +9,6 @@ Batmobile.prj
 Simulation/PIL_ert_rtw/
 Simulation/slprj/
 Simulation/slprj/_jitprj/jitEngineAccessInfo.mat
+Simulation/*.slxc
+Simulation/*.xcf
+CAD\Standards\
