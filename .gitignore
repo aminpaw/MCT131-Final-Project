@@ -1,3 +1,8 @@
 # List of untracked files to ignore
 # vs code
 .vscode/
+# simulink generated files
+./slprj/
+./PIL_ert_rtw/
+./resources/
+./Batmobile.prj
