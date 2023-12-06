@@ -6,5 +6,5 @@
 ./PIL_ert_rtw/
 ./resources/
 ./Batmobile.prj
-./"Simulink Simulation"/PIL_ert_rtw/
-./"Simulink Simulation"/slprj/
+./Simulation/PIL_ert_rtw/
+./Simulation/slprj/
