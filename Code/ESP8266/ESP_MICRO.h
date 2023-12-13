@@ -103,7 +103,7 @@ void returnThisStr(String final_data)
     s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
     s += final_data; // Our final raw data to return
     client.print(s);
-    //Serial.println("Returned to client.");
+    // Serial.println("Returned to client.");
     Serial.println(s);
 }
 void returnThisInt(int final_data)
