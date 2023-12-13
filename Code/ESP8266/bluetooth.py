@@ -7,7 +7,7 @@ import aioconsole
 
 import urllib.request
 
-url = "http://192.168.204.221"
+url = "http://192.168.1.24/"
 
 # Get data from the ip address
 async def get_data():
@@ -36,10 +36,10 @@ async def main():
     while True:
         data = await get_data()
         #convert data to char from ascii code
-        msg = chr(int(data))
-        print(msg + "\n");
+        msg = data
+        print(msg)
         await send_message(writer, msg + '\n')
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.1)
 
 if __name__ == '__main__':
     asyncio.run(main())

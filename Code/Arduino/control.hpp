@@ -8,7 +8,7 @@
 // Wheel radius in cm
 #define WHEEL_RADIUS 3.5
 // Distance between wheels in cm
-#define BASE_WIDTH 12.5
+#define BASE_WIDTH 18
 
 typedef struct MotorPins
 {
@@ -64,10 +64,6 @@ void motorControl(float linearSpeed, float angularSpeed, MotorPins motorPins)
     analogWrite(motorPins.speedRight, rightSpeed);
 
     delay(10);
-
-    // Stop motors
-    analogWrite(motorPins.speedLeft, 0);
-    analogWrite(motorPins.speedRight, 0);
 }
 void motorControl(float linearSpeed, float angularSpeed, MotorPins motorPins, float time)
 {
@@ -111,8 +107,6 @@ void motorControl(float linearSpeed, float angularSpeed, MotorPins motorPins, fl
     analogWrite(motorPins.speedLeft, leftSpeed);
     analogWrite(motorPins.speedRight, rightSpeed);
 
-    delay(time * 1000);
-
     // Stop motors
     analogWrite(motorPins.speedLeft, 0);
     analogWrite(motorPins.speedRight, 0);
@@ -138,7 +132,7 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
     }
     else
     {
-        if (lineReading.LL && lineReading.L && lineReading.M && lineReading.R && lineReading.RR)
+        if (lineReading.LL && lineReading.L && lineReading.R && lineReading.RR)
         {
             // All sensors are on the line, junction detected
             if (lastTurnRight)
@@ -147,7 +141,7 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
                 {
                     turnLeft(speed, motorPins);
                     lineReading = readLine(linePins);
-                } while (~lineReading.LL && ~lineReading.L && lineReading.M && ~lineReading.R && ~lineReading.RR);
+                } while (~lineReading.LL && lineReading.M && ~lineReading.RR);
 
                 lastTurnRight = false;
             }
@@ -157,20 +151,28 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
                 {
                     turnRight(speed, motorPins);
                     lineReading = readLine(linePins);
-                } while (~lineReading.LL && ~lineReading.L && lineReading.M && ~lineReading.R && ~lineReading.RR);
+                } while (~lineReading.LL && lineReading.M && ~lineReading.RR);
                 lastTurnRight = true;
             }
         }
-        else if (lineReading.RR && lineReading.M)
+        else if (lineReading.RR && lineReading.R && lineReading.M)
         {
-            // Rightmost sensor detects the line
-            turnRight(speed, motorPins);
+            do
+            {
+                turnRight(speed, motorPins);
+                lineReading = readLine(linePins);
+            } while (~lineReading.LL && lineReading.M && ~lineReading.RR);
+
             lastTurnRight = true;
         }
-        else if (lineReading.LL && lineReading.M)
+        else if (lineReading.LL && lineReading.L && lineReading.M)
         {
-            // Leftmost sensor detects the line
-            turnLeft(speed, motorPins);
+            do
+            {
+                turnLeft(speed, motorPins);
+                lineReading = readLine(linePins);
+            } while (~lineReading.LL && lineReading.M && ~lineReading.RR);
+
             lastTurnRight = false;
         }
         else if (lineReading.M)
