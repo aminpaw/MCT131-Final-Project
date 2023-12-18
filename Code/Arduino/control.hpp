@@ -128,7 +128,7 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
         {
             turn(motorPins);
             lineReading = readLine(linePins);
-        } while (~lineReading.LL && ~lineReading.L && lineReading.M && ~lineReading.R && ~lineReading.RR);
+        } while (!lineReading.LL && !lineReading.L && lineReading.M && !lineReading.R && !lineReading.RR);
     }
     else
     {
@@ -141,7 +141,7 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
                 {
                     turnLeft(speed, motorPins);
                     lineReading = readLine(linePins);
-                } while (~lineReading.LL && lineReading.M && ~lineReading.RR);
+                } while (!lineReading.LL && lineReading.M && !lineReading.RR);
 
                 lastTurnRight = false;
             }
@@ -151,7 +151,7 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
                 {
                     turnRight(speed, motorPins);
                     lineReading = readLine(linePins);
-                } while (~lineReading.LL && lineReading.M && ~lineReading.RR);
+                } while (!lineReading.LL && lineReading.M && !lineReading.RR);
                 lastTurnRight = true;
             }
         }
@@ -161,7 +161,7 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
             {
                 turnRight(speed, motorPins);
                 lineReading = readLine(linePins);
-            } while (~lineReading.LL && lineReading.M && ~lineReading.RR);
+            } while (!lineReading.LL && lineReading.M && !lineReading.RR);
 
             lastTurnRight = true;
         }
@@ -171,7 +171,7 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
             {
                 turnLeft(speed, motorPins);
                 lineReading = readLine(linePins);
-            } while (~lineReading.LL && lineReading.M && ~lineReading.RR);
+            } while (!lineReading.LL && lineReading.M && !lineReading.RR);
 
             lastTurnRight = false;
         }
@@ -222,13 +222,13 @@ void moveForward(float speed, MotorPins motorPins)
 void turnLeft(float speed, MotorPins motorPins)
 {
     // Turn left (linSpeed = 75, angSpeed = -75)
-    motorControl(speed, -speed, motorPins);
+    motorControl(speed, -0.8 * speed, motorPins);
 }
 
 void turnRight(float speed, MotorPins motorPins)
 {
     // Turn right (linSpeed = 75, angSpeed = 75)
-    motorControl(speed, speed, motorPins);
+    motorControl(speed, 0.8 * speed, motorPins);
 }
 
 #endif
