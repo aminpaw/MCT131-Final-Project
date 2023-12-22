@@ -11,4 +11,4 @@ Simulation/slprj/
 Simulation/slprj/_jitprj/jitEngineAccessInfo.mat
 Simulation/*.slxc
 Simulation/*.xcf
-CAD\Standards\
+CAD/std parts/

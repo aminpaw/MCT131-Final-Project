@@ -1,115 +1,49 @@
-/*
-  Color Sensor Calibration
-  color-sensor-calib.ino
-  Calibrate RGB Color Sensor output Pulse Widths
-  Uses values obtained for RGB Sensor Demo sketch
+/* Example program for using TCS3200 color sensor
+ * author: Panjkrc
+ * date: 12/14/2019
+ * url: https://github.com/Panjkrc/TCS3200_library
+ */
 
-  DroneBot Workshop 2020
-  https://dronebotworkshop.com
-*/
+#include <tcs3200.h> // Include TCS3200 library
 
-// Define color sensor pins
+#define num_of_colors 5 // Declares the number of colors the program can recognise (number of calibrated colors)
 
-#define S0 23
-#define S1 22
-#define S2 25
-#define S3 24
-#define sensorOut 27
+// distinctRGB[] array declares calibration values for each declared color in distinctColors[] array
+int distinctRGB[num_of_colors][3] = {{250, 250, 250}, {0, 0, 0}, {142, 34, 41}, {166, 125, 71}, {35, 55, 38}};
+// distinctColors[] array declares values to be returned from closestColor() function if specified color is recognised
+String distinctColors[num_of_colors] = {"white", "black", "orange", "yellow", "green"};
 
-// Variables for Color Pulse Width Measurements
+int red, green, blue;
 
-int redPW = 0;
-int greenPW = 0;
-int bluePW = 0;
+tcs3200 tcs(23, 22, 25, 24, 27); // (S0, S1, S2, S3, output pin) //  ---  see:  https://www.mouser.com/catalog/specsheets/TCS3200-E11.pdf
 
 void setup()
 {
 
-    // Set S0 - S3 as outputs
-    pinMode(S0, OUTPUT);
-    pinMode(S1, OUTPUT);
-    pinMode(S2, OUTPUT);
-    pinMode(S3, OUTPUT);
-
-    // Set Sensor output as input
-    pinMode(sensorOut, INPUT);
-
-    // Set Pulse Width scaling to 20%
-    digitalWrite(S0, HIGH);
-    digitalWrite(S1, LOW);
-
-    // Setup Serial Monitor
     Serial.begin(9600);
 }
 
 void loop()
 {
 
-    // Read Red Pulse Width
-    redPW = getRedPW();
-    // Delay to stabilize sensor
+    Serial.println(tcs.closestColor(distinctRGB, distinctColors, num_of_colors));
+
+    red = tcs.colorRead('r'); // reads color value for red
+    Serial.print("R= ");
+    Serial.print(red);
+    Serial.print("    ");
+
+    green = tcs.colorRead('g'); // reads color value for green
+    Serial.print("G= ");
+    Serial.print(green);
+    Serial.print("    ");
+
+    blue = tcs.colorRead('b'); // reads color value for blue
+    Serial.print("B= ");
+    Serial.print(blue);
+    Serial.print("    ");
+
+    Serial.println();
+
     delay(200);
-
-    // Read Green Pulse Width
-    greenPW = getGreenPW();
-    // Delay to stabilize sensor
-    delay(200);
-
-    // Read Blue Pulse Width
-    bluePW = getBluePW();
-    // Delay to stabilize sensor
-    delay(200);
-
-    // Print output to Serial Monitor
-    Serial.print("Red PW = ");
-    Serial.print(redPW);
-    Serial.print(" - Green PW = ");
-    Serial.print(greenPW);
-    Serial.print(" - Blue PW = ");
-    Serial.println(bluePW);
-}
-
-// Function to read Red Pulse Widths
-int getRedPW()
-{
-
-    // Set sensor to read Red only
-    digitalWrite(S2, LOW);
-    digitalWrite(S3, LOW);
-    // Define integer to represent Pulse Width
-    int PW;
-    // Read the output Pulse Width
-    PW = pulseIn(sensorOut, LOW);
-    // Return the value
-    return PW;
-}
-
-// Function to read Green Pulse Widths
-int getGreenPW()
-{
-
-    // Set sensor to read Green only
-    digitalWrite(S2, HIGH);
-    digitalWrite(S3, HIGH);
-    // Define integer to represent Pulse Width
-    int PW;
-    // Read the output Pulse Width
-    PW = pulseIn(sensorOut, LOW);
-    // Return the value
-    return PW;
-}
-
-// Function to read Blue Pulse Widths
-int getBluePW()
-{
-
-    // Set sensor to read Blue only
-    digitalWrite(S2, LOW);
-    digitalWrite(S3, HIGH);
-    // Define integer to represent Pulse Width
-    int PW;
-    // Read the output Pulse Width
-    PW = pulseIn(sensorOut, LOW);
-    // Return the value
-    return PW;
 }
