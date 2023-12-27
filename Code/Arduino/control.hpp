@@ -19,7 +19,7 @@ typedef struct MotorPins
     int speedRight;
     int speedLeft;
 } MotorPins;
-void turn(MotorPins motorPins);
+void turn(MotorPins motorPins, LinePin linePins);
 void moveForward(float speed, MotorPins motorPins);
 void turnLeft(float speed, MotorPins motorPins);
 void turnRight(float speed, MotorPins motorPins);
@@ -64,7 +64,7 @@ void motorControl(float linearSpeed, float angularSpeed, MotorPins motorPins)
     analogWrite(motorPins.speedRight, rightSpeed);
 }
 
-bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, bool lastTurnRight, bool colorDetected)
+bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, bool lastTurnRight)
 {
     // Assuming sensor values are read into variables sensor1, sensor2, sensor3, sensor4, sensor5
     // Assuming color sensor value is read into variable colorSensor
@@ -74,11 +74,11 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
     // Read color sensor value
     LineReading lineReading = readLine(linePins);
     if (lineReading.L)
-        steerRatio += 0.06;
+        steerRatio += 0.1;
     if (lineReading.L && lineReading.LL)
         steerRatio += 0.1;
     if (lineReading.R)
-        steerRatio += -0.06;
+        steerRatio += -0.1;
     if (lineReading.R && lineReading.RR)
         steerRatio += -0.1;
 
@@ -95,11 +95,11 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
         if (lastTurnRight)
         {
 
-            steerRatio += -0.2;
+            steerRatio += -0.25;
         }
         else
         {
-            steerRatio += 0.2;
+            steerRatio += 0.25;
         }
     }
     motorControl(speed * (1 - abs(steerRatio)), speed * steerRatio, motorPins);
@@ -193,10 +193,14 @@ bool lineFollowingAlgorithm(float speed, LinePin linePins, MotorPins motorPins, 
     return lastTurnRight;
 }
 
-void turn(MotorPins motorPins)
+void turn(MotorPins motorPins, LinePin linePins)
 {
-    // Turn in place (linSpeed = 0, angSpeed = 75)
-    motorControl(0, 75, motorPins);
+    LineReading readings;
+    do
+    {
+        readings = readLine(linePins);
+        motorControl(0, 75, motorPins);
+    } while (readings.LL == 0 && readings.L == 0);
 }
 
 void moveForward(float speed, MotorPins motorPins)

@@ -31,20 +31,18 @@ typedef struct LinePin
     int RRPin;
 } LinePin;
 
-typedef struct ColorPin
-{
-    int LLPin;
-    int LPin;
-    int MPin;
-    int RPin;
-    int RRPin;
-} ColorPin;
-
 typedef struct UltraPin
 {
     int echoPin;
     int trigPin;
 } UltraPin;
+
+typedef struct ColorPin
+{
+    int S3;
+    int S2;
+    int OUT;
+} ColorPin;
 
 LineReading readLine(LinePin pins);
 void readColor(ColorPin pins);
@@ -59,11 +57,6 @@ LineReading readLine(LinePin pins)
                            digitalRead(pins.RRPin)};
 
     return reading;
-}
-
-void readColor(ColorPin pins)
-{
-    // read color sensor
 }
 
 double readUltra(UltraPin pins)

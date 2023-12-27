@@ -3,15 +3,11 @@
 #include "TCS3200Debug.h"
 #include "TCS3200C.h"
 
-#define TCS3200_S2 25
-#define TCS3200_S3 24
-#define TCS3200_LED 13
-#define TCS3200_OUT 27
-#define TCS3200_S0 23
-#define TCS3200_S1 22
+#define TCS3200_S2 5
+#define TCS3200_S3 6
+#define TCS3200_OUT 4
 
-TCS3200 CS = TCS3200(TCS3200_S2, TCS3200_S3, TCS3200_OUT, TCS3200_S0, TCS3200_S1,
-					 TCS3200_LED, 0);
+TCS3200 CS = TCS3200(TCS3200_S2, TCS3200_S3, TCS3200_OUT, 0);
 SerialDebugger SerialDebug = SerialDebugger();
 TCS3200Debug CSDebug(CS, SerialDebug);
 

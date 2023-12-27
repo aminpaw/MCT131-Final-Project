@@ -48,29 +48,30 @@
 
 #define RGB_SIZE 4 // array index counter limit
 #define SIZENAME 10
-#define SIZECOLORS 8
+#define SIZECOLORS 5
 
 #define TCS3200_WHITE 0
 #define TCS3200_BLACK 1
 #define TCS3200_YELLOW 2
-#define TCS3200_ORANGE 3
-#define TCS3200_RED 4
-#define TCS3200_GREEN 5
-#define TCS3200_BLUE 6
-#define TCS3200_BROWN 7
-typedef struct {
+#define TCS3200_RED 3
+#define TCS3200_GREEN 4
+typedef struct
+{
 	float value[RGB_SIZE]; // Raw data from the sensor
 } sensorData;
 
-typedef struct {
+typedef struct
+{
 	uint8_t
 		value[RGB_SIZE]; // the evaluated colour data (RGB value 0-255 or other)
 } colorData;
-typedef struct {
+typedef struct
+{
 	char name[SIZENAME]; // color name
 	colorData rgb;		 // RGB value
 } colorTable;
-typedef enum {
+typedef enum
+{
 	TCS3200_LEDOFF = 0,
 	TCS3200_LEDREAD = 1,
 	TCS3200_LEDON = 2
@@ -91,13 +92,15 @@ const bool FilterSettings[][2] = {
 };
 const sensorData factory_BW[2] = {{254, 308, 275.5}, {97.5, 116.5, 99}};
 const colorTable factory_ct[SIZECOLORS] = {
-	colorTable{"WHITE", {254, 255, 253}},  colorTable{"BLACK", {0, 0, 0}},
-	colorTable{"YELLOW", {233, 207, 120}}, colorTable{"ORANGE", {201, 98, 72}},
-	colorTable{"RED", {191, 67, 73}},	   colorTable{"GREEN", {154, 143, 67}},
-	colorTable{"BLUE", {139, 139, 166}},   colorTable{"BROWN", {145, 73, 67}}};
+	colorTable{"WHITE", {254, 255, 253}},
+	colorTable{"BLACK", {0, 0, 0}},
+	colorTable{"YELLOW", {233, 207, 120}},
+	colorTable{"RED", {191, 67, 73}},
+	colorTable{"GREEN", {154, 143, 67}}};
 
-class TCS3200 {
-  public:
+class TCS3200
+{
+public:
 	uint8_t _OUT;	  // output enable pin
 	uint8_t _S0, _S1; // frequency scaler
 	uint8_t _S2, _S3; // photodiode filter selection
@@ -131,10 +134,10 @@ class TCS3200 {
 
 	TCS3200();
 	TCS3200(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t nEEPROM = 0);
-	TCS3200(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t LED,
-			uint8_t nEEPROM = 0);
-	TCS3200(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t S0, uint8_t S1,
-			uint8_t LED, uint8_t nEEPROM = 0);
+	TCS3200_1(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t LED,
+			  uint8_t nEEPROM = 0);
+	TCS3200_2(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t S0, uint8_t S1,
+			  uint8_t LED, uint8_t nEEPROM = 0);
 
 	//  Data handling
 	void setPins(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t nEEPROM = 0);
@@ -163,24 +166,30 @@ class TCS3200 {
 	void setRGBMode(bool _RGBMode);
 	bool getRGBMode();
 	void read(); // synchronously non-blocking reading value
-	void update() {
-		if (timer) {
+	void update()
+	{
+		if (timer)
+		{
 			timer->update();
 		}
 	};
 
-	void setTicker(Ticker &tick) {
+	void setTicker(Ticker &tick)
+	{
 		timer = &tick;
 		timer->start();
 	}
 
 	bool onChangeColor();
-	void setOnChangeCallback(void (*callback)(int)) {
+	void setOnChangeCallback(void (*callback)(int))
+	{
 		onChangeCallback = callback;
 	}
 
-	void tick() {
-		if (onChangeColor()) {
+	void tick()
+	{
+		if (onChangeColor())
+		{
 			if (onChangeCallback)
 				onChangeCallback(_lastColor);
 		}
@@ -219,59 +228,66 @@ class TCS3200 {
 	void voidCT();
 	void setToFactoryCT(uint8_t nEEPROM = 0);
 
-	~TCS3200() {
-		if (timer) {
+	~TCS3200()
+	{
+		if (timer)
+		{
 			delete timer;
 			timer = nullptr;
 		}
 	}
 };
 
-TCS3200::TCS3200() : timer(nullptr) {
+TCS3200::TCS3200() : timer(nullptr)
+{
 	voidBW();
 	voidCT();
 }
 
 TCS3200::TCS3200(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t nEEPROM)
-	: TCS3200() {
+	: TCS3200()
+{
 	_S2 = S2;
 	_S3 = S3;
 	_OUT = OUT;
-	_freqSet = TCS3200_FREQ_HI;
+	_freqSet = TCS3200_FREQ_MID;
 	_nEEPROM = nEEPROM;
 	voidBW();
 	voidCT();
 }
 
-TCS3200::TCS3200(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t LED,
-				 uint8_t nEEPROM)
-	: TCS3200() {
+TCS3200::TCS3200_1(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t LED,
+				   uint8_t nEEPROM)
+//: TCS3200()
+{
 	_S2 = S2;
 	_S3 = S3;
 	_OUT = OUT;
 	_LED = LED;
-	_freqSet = TCS3200_FREQ_HI;
+	_freqSet = TCS3200_FREQ_MID;
 	_nEEPROM = nEEPROM;
 	voidBW();
 	voidCT();
 }
 
-TCS3200::TCS3200(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t S0, uint8_t S1,
-				 uint8_t LED, uint8_t nEEPROM)
-	: TCS3200() {
+TCS3200::TCS3200_2(uint8_t S2, uint8_t S3, uint8_t OUT, uint8_t S0, uint8_t S1,
+				   uint8_t LED, uint8_t nEEPROM)
+//: TCS3200()
+{
 	_S0 = S0;
 	_S1 = S1;
 	_S2 = S2;
 	_S3 = S3;
 	_OUT = OUT;
 	_LED = LED;
-	_freqSet = TCS3200_FREQ_HI;
+	_freqSet = TCS3200_FREQ_MID;
 	_nEEPROM = nEEPROM;
 	voidBW();
 	voidCT();
 }
 
-void TCS3200::begin() {
+void TCS3200::begin()
+{
 	if (_S0 != NULL)
 		pinMode(_S0, OUTPUT);
 	if (_S1 != NULL)
@@ -285,10 +301,12 @@ void TCS3200::begin() {
 	setFrequency(_freqSet);
 }
 
-void TCS3200::setRefreshTime(unsigned long refreshTime) {
+void TCS3200::setRefreshTime(unsigned long refreshTime)
+{
 	TCS3200::refreshTime = refreshTime;
 	int value;
-	if (timer) {
+	if (timer)
+	{
 		timer->interval(refreshTime);
 	}
 }
@@ -299,7 +317,8 @@ void TCS3200::LEDON(bool ledON) { digitalWrite(_LED, (ledON) ? HIGH : LOW); }
 
 void TCS3200::setID(String ID) { ID.toCharArray(TCS3200::_ID, SIZENAME); }
 
-void TCS3200::setFrequency(uint8_t f) {
+void TCS3200::setFrequency(uint8_t f)
+{
 	_freqSet = f;
 	/* set the sensor Frequiency
 	|	Freq    |	S0   	|   S1      |
@@ -308,13 +327,15 @@ void TCS3200::setFrequency(uint8_t f) {
 	|	MEDIUM 	|	HIGH    |  LOW      |
 	|   HIGH    |   HIGH    |	HIGH 	|
 	*/
-	if (f < sizeof(FrequencySettings) / sizeof(FrequencySettings[0])) {
+	if (f < sizeof(FrequencySettings) / sizeof(FrequencySettings[0]))
+	{
 		digitalWrite(_S0, FrequencySettings[f][0]);
 		digitalWrite(_S1, FrequencySettings[f][1]);
 	}
 }
 
-void TCS3200::setFilter(uint8_t f) {
+void TCS3200::setFilter(uint8_t f)
+{
 	/* set the sensor color filter
 	|RGB | S2  |    S3      |
 	| R | LOW  |	LOW     |
@@ -324,7 +345,8 @@ void TCS3200::setFilter(uint8_t f) {
 	*/
 	_filterSet = f;
 
-	if (f < sizeof(FilterSettings) / sizeof(FilterSettings[0])) {
+	if (f < sizeof(FilterSettings) / sizeof(FilterSettings[0]))
+	{
 		digitalWrite(_S2, FilterSettings[f][0]);
 		digitalWrite(_S3, FilterSettings[f][1]);
 	}
@@ -335,15 +357,20 @@ void TCS3200::setFilter(uint8_t f) {
 ---------------------READINGS--------------------------
 -------------------------------------------------------
 */
-void TCS3200::setRGBMode(bool _RGBMode) {
-	if (_RGBMode) {
+void TCS3200::setRGBMode(bool _RGBMode)
+{
+	if (_RGBMode)
+	{
 		f_RGB_MODE = &TCS3200::read_RGB;
-	} else {
+	}
+	else
+	{
 		f_RGB_MODE = &TCS3200::read_RAW;
 	}
 }
 
-bool TCS3200::getRGBMode() {
+bool TCS3200::getRGBMode()
+{
 	return (f_RGB_MODE == &TCS3200::read_RGB) ? true : false;
 }
 
@@ -354,41 +381,50 @@ void TCS3200::read() { (this->*f_RGB_MODE)(); }
 -----------------
 ------------------------------------------------------
 */
-bool TCS3200::onChangeColor() {
+bool TCS3200::onChangeColor()
+{
 	TCS3200::read();
 	int cli = TCS3200::checkColor(&_rgb);
 
-	if (cli != TCS3200::_lastColor) {
+	if (cli != TCS3200::_lastColor)
+	{
 		TCS3200::_lastColor = cli;
 		return true;
-	} else {
+	}
+	else
+	{
 		return false;
 	}
 }
 
-String TCS3200::readColor() {
+String TCS3200::readColor()
+{
 	TCS3200::read();
 	int cli = TCS3200::checkColor(&_rgb);
 	return _ct[cli].name;
 }
 uint8_t TCS3200::readLastColorID() { return _lastColor; }
 
-sensorData TCS3200::color() {
+sensorData TCS3200::color()
+{
 	TCS3200::LEDON(_LEDToRead);
 	sensorData sensorcolor;
 
-	for (int i = 0; i < RGB_SIZE; ++i) {
+	for (int i = 0; i < RGB_SIZE; ++i)
+	{
 		float value = 0;
 		float fvalue = 0;
 		int n = 0;
 
-		for (int j = 0; j < _nSamples; ++j) {
+		for (int j = 0; j < _nSamples; ++j)
+		{
 			setFilter(i);
 			float color = pulseIn(_OUT, digitalRead(_OUT) == HIGH ? LOW : HIGH);
 			// 1.5 value of threshold. Exclude values which are 50% higher or
 			// lower than color reading.
 			float threshold = 1.5;
-			if (color > (fvalue / threshold)) {
+			if (color > (fvalue / threshold))
+			{
 				n++;
 				value += color;
 				fvalue += color;
@@ -400,19 +436,23 @@ sensorData TCS3200::color() {
 	return sensorcolor;
 }
 
-void TCS3200::voidRAW(sensorData *d) {
-	for (int i = 0; i < RGB_SIZE; ++i) {
+void TCS3200::voidRAW(sensorData *d)
+{
+	for (int i = 0; i < RGB_SIZE; ++i)
+	{
 		d->value[i] = 0;
 	}
 }
 
-colorData TCS3200::readRGB() {
+colorData TCS3200::readRGB()
+{
 	TCS3200::readRAW();
 	colorData color = TCS3200::raw2RGB();
 	return color;
 }
 
-sensorData TCS3200::readRAW() {
+sensorData TCS3200::readRAW()
+{
 	sensorData rawcl;
 	rawcl = TCS3200::color();
 	_raw.value[TCS3200_RGB_R] = rawcl.value[0];
@@ -422,15 +462,19 @@ sensorData TCS3200::readRAW() {
 	return rawcl;
 }
 
-sensorData TCS3200::relativeColor() {
-	if (f_RGB_MODE == &TCS3200::read_RGB) {
+sensorData TCS3200::relativeColor()
+{
+	if (f_RGB_MODE == &TCS3200::read_RGB)
+	{
 		uint32_t sumcolor = _rgb.value[0] + _rgb.value[1] + _rgb.value[2];
 		_relrgb.value[TCS3200_RGB_R] = _rgb.value[TCS3200_RGB_R] / sumcolor;
 		_relrgb.value[TCS3200_RGB_G] = _rgb.value[TCS3200_RGB_G] / sumcolor;
 		_relrgb.value[TCS3200_RGB_B] = _rgb.value[TCS3200_RGB_B] / sumcolor;
 		_relraw.value[TCS3200_RGB_X] = _rgb.value[TCS3200_RGB_X] / sumcolor;
 		return _relrgb;
-	} else {
+	}
+	else
+	{
 		uint32_t sumcolor = _raw.value[0] + _raw.value[1] + _raw.value[2];
 		_relraw.value[TCS3200_RGB_R] = _raw.value[TCS3200_RGB_R] / sumcolor;
 		_relraw.value[TCS3200_RGB_G] = _raw.value[TCS3200_RGB_G] / sumcolor;
@@ -440,30 +484,36 @@ sensorData TCS3200::relativeColor() {
 	}
 }
 
-void TCS3200::getRGB(colorData *rgb) {
+void TCS3200::getRGB(colorData *rgb)
+{
 	if (rgb == NULL)
 		return;
-	for (uint8_t i = 0; i < RGB_SIZE; i++) {
+	for (uint8_t i = 0; i < RGB_SIZE; i++)
+	{
 		rgb->value[i] = _rgb.value[i];
 	}
 }
 
-void TCS3200::getRaw(sensorData *d) {
+void TCS3200::getRaw(sensorData *d)
+{
 	// get the raw data of the current reading useful to set dark and white
 	// calibration data
 	if (d == NULL)
 		return;
 
-	for (uint8_t i = 0; i < RGB_SIZE; i++) {
+	for (uint8_t i = 0; i < RGB_SIZE; i++)
+	{
 		d->value[i] = _raw.value[i];
 	}
 }
 
-colorData TCS3200::raw2RGB(void) {
+colorData TCS3200::raw2RGB(void)
+{
 	// Exploiting linear relationship to remap the range
 	int32_t x;
 	colorData color;
-	for (uint8_t i = 0; i < RGB_SIZE; i++) {
+	for (uint8_t i = 0; i < RGB_SIZE; i++)
+	{
 		x = (_raw.value[i] - _darkraw.value[i]) * 255;
 		x /= (_whiteraw.value[i] - _darkraw.value[i]);
 
@@ -479,18 +529,22 @@ colorData TCS3200::raw2RGB(void) {
 	return color;
 }
 
-uint8_t TCS3200::checkColor(colorData *rgb) {
+uint8_t TCS3200::checkColor(colorData *rgb)
+{
 	int32_t d;
 	uint32_t v, minV = 999999L;
 	uint8_t minI;
 
-	for (uint8_t i = 0; i < SIZECOLORS; i++) {
+	for (uint8_t i = 0; i < SIZECOLORS; i++)
+	{
 		v = 0;
-		for (uint8_t j = 0; j < RGB_SIZE; j++) {
+		for (uint8_t j = 0; j < RGB_SIZE; j++)
+		{
 			d = _ct[i].rgb.value[j] - rgb->value[j];
 			v += (d * d);
 		}
-		if (v < minV) {
+		if (v < minV)
+		{
 			minV = v;
 			minI = i;
 		}
@@ -505,32 +559,38 @@ uint8_t TCS3200::checkColor(colorData *rgb) {
  * --------------------------------------------------
  */
 
-sensorData TCS3200::setDarkCal(bool saveDarkRaw) {
+sensorData TCS3200::setDarkCal(bool saveDarkRaw)
+{
 	sensorData darkcl;
 	darkcl = TCS3200::readRAW();
-	if (saveDarkRaw) {
+	if (saveDarkRaw)
+	{
 		_darkraw = darkcl;
 	}
 	return darkcl;
 }
 
-sensorData TCS3200::setWhiteCal(bool saveWhiteRaw) {
+sensorData TCS3200::setWhiteCal(bool saveWhiteRaw)
+{
 	sensorData whitecl;
 	whitecl = TCS3200::readRAW();
-	if (saveWhiteRaw) {
+	if (saveWhiteRaw)
+	{
 		_whiteraw = whitecl;
 	}
 	return whitecl;
 }
 
-colorData TCS3200::setColorCal(uint8_t colorID) {
+colorData TCS3200::setColorCal(uint8_t colorID)
+{
 	colorData colorcl;
 	colorcl = TCS3200::readRGB();
 	_ct[colorID].rgb = colorcl;
 	return colorcl;
 }
 
-void TCS3200::saveBW(uint8_t nEEPROM) {
+void TCS3200::saveBW(uint8_t nEEPROM)
+{
 	_nEEPROM = nEEPROM;
 	int calWhiteAddress = _nEEPROM;
 	int calDarkAddress = calWhiteAddress + sizeof(sensorData);
@@ -538,17 +598,20 @@ void TCS3200::saveBW(uint8_t nEEPROM) {
 	EEPROM.put(calDarkAddress, _darkraw);
 }
 
-void TCS3200::saveCal(uint8_t nEEPROM) {
+void TCS3200::saveCal(uint8_t nEEPROM)
+{
 	TCS3200::saveBW(nEEPROM);
 	TCS3200::saveCT(nEEPROM);
 }
 
-void TCS3200::loadCal(uint8_t nEEPROM) {
+void TCS3200::loadCal(uint8_t nEEPROM)
+{
 	TCS3200::loadBW(nEEPROM);
 	TCS3200::loadCT(nEEPROM);
 }
 
-void TCS3200::loadBW(uint8_t nEEPROM) {
+void TCS3200::loadBW(uint8_t nEEPROM)
+{
 	_nEEPROM = nEEPROM;
 	int calWhiteAddress = _nEEPROM;
 	int calDarkAddress = calWhiteAddress + sizeof(sensorData);
@@ -557,35 +620,43 @@ void TCS3200::loadBW(uint8_t nEEPROM) {
 	EEPROM.get(calDarkAddress, _darkraw);
 }
 
-void TCS3200::voidBW() {
+void TCS3200::voidBW()
+{
 	_darkraw = factory_BW[0];
 	_whiteraw = factory_BW[1];
 }
 
-void TCS3200::saveCT(uint8_t nEEPROM) {
+void TCS3200::saveCT(uint8_t nEEPROM)
+{
 	// Save Color Table after Black and White sensorData Calibration values
 	int address = nEEPROM + 2 * sizeof(sensorData);
-	for (int i = 0; i < SIZECOLORS; ++i) {
+	for (int i = 0; i < SIZECOLORS; ++i)
+	{
 		EEPROM.put(address, _ct[i]);
 		address += sizeof(colorTable);
 	}
 }
 
-void TCS3200::loadCT(uint8_t nEEPROM) {
+void TCS3200::loadCT(uint8_t nEEPROM)
+{
 	// Load Color Table after Black and White sensorData Calibration values
 	int address = nEEPROM + 2 * sizeof(sensorData);
-	for (int i = 0; i < SIZECOLORS; ++i) {
+	for (int i = 0; i < SIZECOLORS; ++i)
+	{
 		EEPROM.get(address, _ct[i]);
 		address += sizeof(colorTable);
 	}
 }
 
-void TCS3200::voidCT() {
-	for (uint8_t i = 0; i < SIZECOLORS; i++) {
+void TCS3200::voidCT()
+{
+	for (uint8_t i = 0; i < SIZECOLORS; i++)
+	{
 		_ct[i] = factory_ct[i];
 	}
 }
-void TCS3200::setToFactoryCT(uint8_t nEEPROM) {
+void TCS3200::setToFactoryCT(uint8_t nEEPROM)
+{
 	TCS3200::voidCT();
 	TCS3200::saveCT(nEEPROM);
 }

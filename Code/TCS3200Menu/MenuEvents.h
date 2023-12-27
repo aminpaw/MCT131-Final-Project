@@ -4,44 +4,50 @@ bool ledState = true;
 int refreshTime = 500;
 int samples = 50;
 TCS3200_LEDStatus ledToReadState = TCS3200_LEDON;
-enum Colors {
+enum Colors
+{
 	WHITE = 1,
 	BLACK = 0,
 	YELLOW = 2,
-	ORANGE = 3,
-	RED = 4,
-	GREEN = 5,
-	BLUE = 6,
-	BROWN = 7
+	RED = 3,
+	GREEN = 4,
 };
-const char *colorNames[] = {"WHITE", "BLACK", "YELLOW", "ORANGE",
-							"RED",	 "GREEN", "BLUE",	"BROWN"};
+const char *colorNames[] = {"WHITE", "BLACK", "YELLOW",
+							"RED", "GREEN"};
 
-enum RGBMode { RGB, RAW };
+enum RGBMode
+{
+	RGB,
+	RAW
+};
 int manualColorCal = 0;
 RGBMode rgbState = RGB; // Establecer el modo por defecto a RGB
 String freqStates[4] = {" - HIGH 100%", " - MID 20%", " - LOW 2%", " - OFF 0%"};
 
 result doStop(eventMask e, navNode &nav, prompt &item) { return proceed; }
 
-result readColor(eventMask e, navNode &nav, prompt &item) {
+result readColor(eventMask e, navNode &nav, prompt &item)
+{
 	CSDebug.readColor();
 	CSDebug.read();
 	return proceed;
 }
 
-result readRelativeColor(eventMask e, navNode &nav, prompt &item) {
+result readRelativeColor(eventMask e, navNode &nav, prompt &item)
+{
 	CSDebug.readColor();
 	CSDebug.relativeColor();
 	return proceed;
 }
 
-result setFrequency(eventMask e, navNode &nav, prompt &item) {
+result setFrequency(eventMask e, navNode &nav, prompt &item)
+{
 	CS.setFrequency(freq);
 	return proceed;
 }
 
-result getFrequency(eventMask e, navNode &nav, prompt &item) {
+result getFrequency(eventMask e, navNode &nav, prompt &item)
+{
 	uint8_t freqLevel = CS.getFrequency();
 	Serial.println();
 	Serial.print("Frequency : ");
@@ -49,47 +55,56 @@ result getFrequency(eventMask e, navNode &nav, prompt &item) {
 	return proceed;
 }
 
-result ledEvent(eventMask e, navNode &nav, prompt &item) {
+result ledEvent(eventMask e, navNode &nav, prompt &item)
+{
 	CS.LEDON(ledState);
 	return proceed;
 }
 
-result LEDToReadEvent(eventMask e, navNode &nav, prompt &item) {
+result LEDToReadEvent(eventMask e, navNode &nav, prompt &item)
+{
 	CS.setLEDtoRead(ledToReadState);
 	return proceed;
 }
 
-result setRefreshTime(eventMask e, navNode &nav, prompt &item) {
+result setRefreshTime(eventMask e, navNode &nav, prompt &item)
+{
 	CS.setRefreshTime(refreshTime);
 	return proceed;
 }
 
-result setSamples(eventMask e, navNode &nav, prompt &item) {
+result setSamples(eventMask e, navNode &nav, prompt &item)
+{
 	CS.nSamples(samples);
 	return proceed;
 }
 
-result rgbMode(eventMask e, navNode &nav, prompt &item) {
+result rgbMode(eventMask e, navNode &nav, prompt &item)
+{
 	CS.setRGBMode(rgbState);
 	return proceed;
 }
 
-result readColorTable(eventMask e, navNode &nav, prompt &item) {
+result readColorTable(eventMask e, navNode &nav, prompt &item)
+{
 	CSDebug.readCT();
 	return proceed;
 }
 
-result saveCT(eventMask e, navNode &nav, prompt &item) {
+result saveCT(eventMask e, navNode &nav, prompt &item)
+{
 	CSDebug.saveCT();
 	return proceed;
 }
 
-result factoryCT(eventMask e, navNode &nav, prompt &item) {
+result factoryCT(eventMask e, navNode &nav, prompt &item)
+{
 	CS.setToFactoryCT();
 	return proceed;
 }
 
-result manualCalibrate(eventMask e, navNode &nav, prompt &item) {
+result manualCalibrate(eventMask e, navNode &nav, prompt &item)
+{
 	Serial.println(manualColorCal);
 	Serial.print(" - Calibrate Color: ");
 	Serial.println(colorNames[manualColorCal]);
@@ -97,40 +112,47 @@ result manualCalibrate(eventMask e, navNode &nav, prompt &item) {
 	return proceed;
 }
 
-result SaveColor(eventMask e, navNode &nav, prompt &item) {
+result SaveColor(eventMask e, navNode &nav, prompt &item)
+{
 	colorData colorcl = CSDebug.readRGB();
 	CS._ct[manualColorCal].rgb = colorcl;
 	return proceed;
 }
 
-result darkCal(eventMask e, navNode &nav, prompt &item) {
+result darkCal(eventMask e, navNode &nav, prompt &item)
+{
 	CSDebug.setDarkCal();
 	CS.saveBW();
 	return proceed;
 }
 
-result whiteCal(eventMask e, navNode &nav, prompt &item) {
+result whiteCal(eventMask e, navNode &nav, prompt &item)
+{
 	CSDebug.setWhiteCal();
 	CS.saveBW();
 	return proceed;
 }
 
-result currentDarkCal(eventMask e, navNode &nav, prompt &item) {
+result currentDarkCal(eventMask e, navNode &nav, prompt &item)
+{
 	CSDebug.getDarkCal();
 	return proceed;
 }
 
-result currentWhiteCal(eventMask e, navNode &nav, prompt &item) {
+result currentWhiteCal(eventMask e, navNode &nav, prompt &item)
+{
 	CSDebug.getWhiteCal();
 	return proceed;
 }
 
-result loadBW(eventMask e, navNode &nav, prompt &item) {
+result loadBW(eventMask e, navNode &nav, prompt &item)
+{
 	CSDebug.loadBW();
 	return proceed;
 }
 
-result loadCT(eventMask e, navNode &nav, prompt &item) {
+result loadCT(eventMask e, navNode &nav, prompt &item)
+{
 	CSDebug.loadCT();
 	return proceed;
 }
