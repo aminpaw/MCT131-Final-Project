@@ -63,7 +63,10 @@ double readUltra(UltraPin pins)
 {
     HCSR04.begin(pins.trigPin, pins.echoPin);
     double *reading = HCSR04.measureDistanceMm();
-    return reading[0];
+    if (reading[0] == -1)
+        return 950;
+    else
+        return reading[0];
 }
 
 #endif
