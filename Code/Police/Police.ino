@@ -8,21 +8,31 @@ LinePin linePins = {A1, A2, A3, A4, A5};
 UltraPin ultraPins = {13, 12};
 ColorPin colorPins = {2, 3, 4};
 MotorPins motorPins = {10, 9, 7, 8, 5, 6};
+
 TCS3200 CS = TCS3200(colorPins.S2, colorPins.S3, colorPins.OUT, 0);
 
 int colorID;
 Servo trigger;
-bool lastTurnRight = 0;
-float speed = 90;
 
 void colorChanged(int color)
 {
-  // read color
-  CS.onChangeColor();
-  colorID = CS.readLastColorID();
+  if (CS.onChangeColor())
+  {
+    Serial.print("Color is: ");
+    Serial.println(CS._ct[CS.readLastColorID()].name);
+    colorID = CS.readLastColorID();
+  }
+  else
+  {
+    colorID = CS.readLastColorID();
+  }
 }
 
 Ticker CSTicker(colorChanged, 10, 0, MILLIS);
+
+// Test Parameters
+bool lastTurnRight = 0;
+float speed = 90;
 
 void setup()
 {
@@ -43,16 +53,13 @@ void setup()
   pinMode(motorPins.lb, OUTPUT);
   pinMode(motorPins.speedLeft, OUTPUT);
   pinMode(motorPins.speedRight, OUTPUT);
+  motorControl(80, 0, motorPins);
 }
 
 void loop()
 {
   CS.update();
-  if (CS.readLastColorID() == 0 || CS.readLastColorID() == 1) // 0 is black, 1 is white
-  {
-    lastTurnRight = lineFollowingAlgorithm(speed, linePins, motorPins, lastTurnRight);
-  }
-  else if (CS.readLastColorID() == 2) // 2 is yellow
+  if (CS.readLastColorID() == 2)
   {
     if (speed != 100)
     {
@@ -66,13 +73,5 @@ void loop()
       motorControl(speed, 0, motorPins);
       delay(100);
     }
-  }
-  else if (CS.readLastColorID() == 3) // 3 is red
-  {
-    shootJoker(trigger);
-  }
-  else if (CS.readLastColorID() == 4) // 4 is green
-  {
-    shootRiddler(trigger);
   }
 }

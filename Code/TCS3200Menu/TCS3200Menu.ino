@@ -3,8 +3,8 @@
 #include "TCS3200Debug.h"
 #include "TCS3200C.h"
 
-#define TCS3200_S2 5
-#define TCS3200_S3 6
+#define TCS3200_S2 3
+#define TCS3200_S3 2
 #define TCS3200_OUT 4
 
 TCS3200 CS = TCS3200(TCS3200_S2, TCS3200_S3, TCS3200_OUT, 0);

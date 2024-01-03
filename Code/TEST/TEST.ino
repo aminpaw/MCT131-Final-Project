@@ -1,9 +1,6 @@
 // test ultrasonic sensor and hc05
 
 #include <Arduino.h>
-#include "sensors.hpp"
-
-UltraPin ultraPin = {13, 12};
 
 void setup()
 {
@@ -12,6 +9,5 @@ void setup()
 
 void loop()
 {
-    Serial.println(readUltra(ultraPin));
-    delay(1000);
+    analogWrite(5, 255);
 }
